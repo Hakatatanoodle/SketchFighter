@@ -3,48 +3,57 @@
 //function to print the state of the game
 void printState(int dummyHealth,int playerPosition)
 {
-    std::cout<<"Health: "<<dummyHealth <<std::endl;
-    std::cout<<"Position: "<<playerPosition<<std::endl;
+    std::cout<<"Dummy Health: "<<dummyHealth <<std::endl;
+    std::cout<<"Player Position: "<<playerPosition<<std::endl;
     std::cout<<"\n";
 }
 
 
 int main() 
 {
-    int dummyHealth=50,playerPosition=0;
-    char input;
+    //constant declarations
+    const int  kInitialDummyHealth=50;
+    const int kInitialPlayerPosition=0;
+    const int kAttackDamage=5;
+    const char kMoveRight='d';
+    const char kMoveLeft='a';
+    const char kAttack='f';
+    const char kQuitLoop='q';
 
+    int dummyHealth=kInitialDummyHealth,playerPosition=kInitialPlayerPosition;
+    char input;
     std::cout << "=====SketchFighter Console Prototype=====" << std::endl;
-    std::cout<<"press a to left!"<<std::endl;
-    std::cout<<"press d to go right!"<<std::endl;
-    std::cout<<"press f  to attack!"<<std::endl;
+    std::cout<<"press a to move left!"<<std::endl;
+    std::cout<<"press d to move right!"<<std::endl;
+    std::cout<<"press f to attack!"<<std::endl;
     std::cout<<"press q to quit!"<<std::endl;
-    
-    
-    for(int i=0;i<=dummyHealth;i++)
+    bool isRunning =true;
+
+    //game loop
+    while(isRunning && dummyHealth>0)
     {
         printState(dummyHealth,playerPosition);
-        printf("Enter any key: ");
+        std::cout << "Enter command (a=left, d=right, f=attack, q=quit): ";
         std::cin>>input;
-       if(input=='a')
+       if(input==kMoveLeft)
        {
         playerPosition--;
         std::cout<<"player moved to left!"<<std::endl;
        }
-       else if(input=='d')
+       else if(input==kMoveRight)
        {
         playerPosition++;
         std::cout<<"player moved to right!"<<std::endl;
        }
-       else if(input=='f')
+       else if(input==kAttack)
        {
-        dummyHealth-=5;
-        std::cout<<"player got hit!"<<std::endl;
+        dummyHealth-=kAttackDamage;
+        std::cout<<"You won!! Dummy got defeated!"<<std::endl;
        }
-       else if(input=='q')
+       else if(input==kQuitLoop)
        {
         std::cout<<"player quit!"<<std::endl;
-        break;
+        isRunning=false;
        }
        else
        {
