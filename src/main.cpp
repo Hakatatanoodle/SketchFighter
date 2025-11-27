@@ -12,22 +12,23 @@ void printState(int dummyHealth,int playerPosition)
 int main() 
 {
     //constant declarations
-    const int  kInitialDummyHealth=50;
-    const int kInitialPlayerPosition=0;
-    const int kAttackDamage=5;
-    const char kMoveRight='d';
-    const char kMoveLeft='a';
-    const char kAttack='f';
-    const char kQuitLoop='q';
+    const int  kInitialDummyHealth = 50;
+    const int kInitialPlayerPosition = 0;
+    const int kAttackDamage = 5;
+    const char kMoveRight = 'd';
+    const char kMoveLeft = 'a';
+    const char kAttack = 'f';
+    const char kQuitLoop = 'q';
 
-    int dummyHealth=kInitialDummyHealth,playerPosition=kInitialPlayerPosition;
+    int dummyHealth = kInitialDummyHealth;
+    int playerPosition = kInitialPlayerPosition;
     char input;
     std::cout << "=====SketchFighter Console Prototype=====" << std::endl;
     std::cout<<"press a to move left!"<<std::endl;
     std::cout<<"press d to move right!"<<std::endl;
     std::cout<<"press f to attack!"<<std::endl;
     std::cout<<"press q to quit!"<<std::endl;
-    bool isRunning =true;
+    bool isRunning = true;
 
     //game loop
     while(isRunning && dummyHealth>0)
@@ -48,7 +49,15 @@ int main()
        else if(input==kAttack)
        {
         dummyHealth-=kAttackDamage;
-        std::cout<<"You won!! Dummy got defeated!"<<std::endl;
+        if(dummyHealth<=0)
+        {
+            std::cout<<"You won!! Dummy got defeated!"<<std::endl;
+            isRunning=false;
+        }
+        else 
+        {
+            std::cout<<"Dummy got hit!"<<std::endl;
+        }
        }
        else if(input==kQuitLoop)
        {
