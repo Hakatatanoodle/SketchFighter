@@ -1,12 +1,15 @@
-#define kInitialDummyHealth 50
-#define kInitialPlayerPosition 0
-#define kAttackDamage 5
-#define kMoveRight 'd'
-#define kMoveLeft 'a'
-#define kAttack 'f'
-#define kQuitLoop 'q'
+
 
 #include <iostream>
+
+//constants
+constexpr int kInitialDummyHealth = 50;
+constexpr int kInitialPlayerPosition = 0;
+constexpr int kAttackDamage = 5;
+constexpr char kMoveRight = 'd';
+constexpr char kMoveLeft = 'a';
+constexpr char kAttack = 'f';
+constexpr char kQuitLoop = 'q';
 
 //struct to hold the game state
 struct GameState
@@ -43,19 +46,17 @@ void printInstructions(){
 }
 
 //function to process player input/command
-void processInput(GameState& state,char input)
+void processCommand(GameState& state,char input)
 {
-    std::cout << "Enter command (a=left, d=right, f=attack, q=quit): ";
-     std::cin>>input;
     if(input==kMoveLeft)
     {
         state.playerPosition--;
-        std::cout<<"player moved to left!"<<std::endl;
+        std::cout << "player moved to left!" << std::endl;
     }
     else if(input==kMoveRight)
     {
         state.playerPosition++;
-        std::cout<<"player moved to right!"<<std::endl;
+        std::cout << "player moved to right!" << std::endl;
     }
     else if(input==kAttack)
     {
@@ -67,28 +68,31 @@ void processInput(GameState& state,char input)
         }
         else 
         {
-            std::cout<<"Dummy got hit!"<<std::endl;
+            std::cout << "Dummy got hit!" << std::endl;
         }
     }
-    else if(input==kQuitLoop)
+    else if(input == kQuitLoop)
     {
-        std::cout<<"player quit!"<<std::endl;
+        std::cout << "player quit!" << std::endl;
         state.isRunning=false;
     }
     else
     {
-        std::cout<<"No such key!"<<std::endl;
+        std::cout << "No such key!" << std::endl;
     }
 }
 
 //function to run the game loop
 void runGameLoop(GameState& state)
 {
+
     char input;
-    while(state.isRunning)
+    while(state.isRunning && state.dummyHealth > 0)
     {
         printState(state);
-        processInput(state,input);
+        std::cout<<"Enter command (a=left, d=right, f=attack, q=quit): ";
+        std::cin >> input;
+        processCommand(state , input);
     }
 }
 
