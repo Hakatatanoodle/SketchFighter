@@ -1,74 +1,40 @@
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
-//function to print the state of the game
-void printState(int dummyHealth,int playerPosition)
+int main()
 {
-    std::cout<<"Dummy Health: "<<dummyHealth <<std::endl;
-    std::cout<<"Player Position: "<<playerPosition<<std::endl;
-    std::cout<<"\n";
-}
+    std::cout<<"=====SketchFighter Console Prototype====="<<std::endl;
+    sf::RenderWindow window(sf::VideoMode(800, 600), "SketchFighter Prototype");
+    std::cout<<"Window created!"<<std::endl;
+    window.setFramerateLimit(60);
 
-
-int main() 
-{
-    //constant declarations
-    const int  kInitialDummyHealth = 50;
-    const int kInitialPlayerPosition = 0;
-    const int kAttackDamage = 5;
-    const char kMoveRight = 'd';
-    const char kMoveLeft = 'a';
-    const char kAttack = 'f';
-    const char kQuitLoop = 'q';
-
-    int dummyHealth = kInitialDummyHealth;
-    int playerPosition = kInitialPlayerPosition;
-    char input;
-    std::cout << "=====SketchFighter Console Prototype=====" << std::endl;
-    std::cout<<"press a to move left!"<<std::endl;
-    std::cout<<"press d to move right!"<<std::endl;
-    std::cout<<"press f to attack!"<<std::endl;
-    std::cout<<"press q to quit!"<<std::endl;
-    bool isRunning = true;
-
-    //game loop
-    while(isRunning && dummyHealth>0)
+    while(window.isOpen())
     {
-        printState(dummyHealth,playerPosition);
-        std::cout << "Enter command (a=left, d=right, f=attack, q=quit): ";
-        std::cin>>input;
-       if(input==kMoveLeft)
-       {
-        playerPosition--;
-        std::cout<<"player moved to left!"<<std::endl;
-       }
-       else if(input==kMoveRight)
-       {
-        playerPosition++;
-        std::cout<<"player moved to right!"<<std::endl;
-       }
-       else if(input==kAttack)
-       {
-        dummyHealth-=kAttackDamage;
-        if(dummyHealth<=0)
+        sf::Event event;
+        while(window.pollEvent(event))
         {
-            std::cout<<"You won!! Dummy got defeated!"<<std::endl;
-            isRunning=false;
+            if(event.type==sf::Event::Closed)
+            {
+                std::cout<<"window closed!"<<std::endl;
+                window.close();
+            }
+                                
+            if(event.type==sf::Event::KeyPressed && event.key.code==sf::Keyboard::Escape)
+            {
+                std::cout<<"Escape key pressed!"<<std::endl;
+                window.close();
+            }
         }
-        else 
-        {
-            std::cout<<"Dummy got hit!"<<std::endl;
-        }
-       }
-       else if(input==kQuitLoop)
-       {
-        std::cout<<"player quit!"<<std::endl;
-        isRunning=false;
-       }
-       else
-       {
-        std::cout<<"No such key!"<<std::endl;
-       }
+        window.clear(sf::Color::Black);
+
+        sf::RectangleShape player(sf::Vector2f(50.f,100.f));
+        player.setFillColor(sf::Color::White);
+        player.setPosition(375.f,250.f);
+
+        window.draw(player);
+        window.display();
+
     }
+    std::cout<<"exiting main"<<std::endl;
     return 0;
 }
-
