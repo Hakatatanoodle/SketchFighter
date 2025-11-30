@@ -1,111 +1,40 @@
-
-
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
-//constants
-constexpr int kInitialDummyHealth = 50;
-constexpr int kInitialPlayerPosition = 0;
-constexpr int kAttackDamage = 5;
-constexpr char kMoveRight = 'd';
-constexpr char kMoveLeft = 'a';
-constexpr char kAttack = 'f';
-constexpr char kQuitLoop = 'q';
-
-//struct to hold the game state
-struct GameState
+int main()
 {
-    int dummyHealth;
-    int playerPosition;
-    bool isRunning;
+    std::cout<<"=====SketchFighter Console Prototype====="<<std::endl;
+    sf::RenderWindow window(sf::VideoMode(800, 600), "SketchFighter Prototype");
+    std::cout<<"Window created!"<<std::endl;
+    window.setFramerateLimit(60);
 
-};
-
-//funtion to initialize the game state
-void initializeGame(GameState& state)
-{
-    state.dummyHealth = kInitialDummyHealth;
-    state.playerPosition = kInitialPlayerPosition;
-    state.isRunning = true;
-}
-
-//function to print the state of the game
-void printState(const GameState& state)
-{
-    std::cout<<"Dummy Health: "<<state.dummyHealth <<std::endl;
-    std::cout<<"Player Position: "<<state.playerPosition<<std::endl;
-    std::cout<<"\n";
-}
-
-//function to print instructions
-void printInstructions(){
-    std::cout<<"=====SketchFighter Console Prototype=====" << std::endl;
-    std::cout<<"press a to move left!"<<std::endl;
-    std::cout<<"press d to move right!"<<std::endl;
-    std::cout<<"press f to attack!"<<std::endl;
-    std::cout<<"press q to quit!"<<std::endl;
-}
-
-//function to process player input/command
-void processCommand(GameState& state,char input)
-{
-    if(input==kMoveLeft)
+    while(window.isOpen())
     {
-        state.playerPosition--;
-        std::cout << "player moved to left!" << std::endl;
-    }
-    else if(input==kMoveRight)
-    {
-        state.playerPosition++;
-        std::cout << "player moved to right!" << std::endl;
-    }
-    else if(input==kAttack)
-    {
-        state.dummyHealth-=kAttackDamage;
-        if(state.dummyHealth<=0)
+        sf::Event event;
+        while(window.pollEvent(event))
         {
-            std::cout<<"You won!! Dummy got defeated!"<<std::endl;
-            state.isRunning=false;
+            if(event.type==sf::Event::Closed)
+            {
+                std::cout<<"window closed!"<<std::endl;
+                window.close();
+            }
+                                
+            if(event.type==sf::Event::KeyPressed && event.key.code==sf::Keyboard::Escape)
+            {
+                std::cout<<"Escape key pressed!"<<std::endl;
+                window.close();
+            }
         }
-        else 
-        {
-            std::cout << "Dummy got hit!" << std::endl;
-        }
-    }
-    else if(input == kQuitLoop)
-    {
-        std::cout << "player quit!" << std::endl;
-        state.isRunning=false;
-    }
-    else
-    {
-        std::cout << "No such key!" << std::endl;
-    }
-}
+        window.clear(sf::Color::Black);
 
-//function to run the game loop
-void runGameLoop(GameState& state)
-{
+        sf::RectangleShape player(sf::Vector2f(50.f,100.f));
+        player.setFillColor(sf::Color::White);
+        player.setPosition(375.f,250.f);
 
-    char input;
-    while(state.isRunning && state.dummyHealth > 0)
-    {
-        printState(state);
-        std::cout<<"Enter command (a=left, d=right, f=attack, q=quit): ";
-        std::cin >> input;
-        processCommand(state , input);
+        window.draw(player);
+        window.display();
+
     }
-}
-
-int main() 
-{
-    //declare game state
-    GameState state;
-    //initialize game
-    initializeGame(state);
-    //print instructions
-    printInstructions();
-    //game loop
-    runGameLoop(state);
+    std::cout<<"exiting main"<<std::endl;
     return 0;
 }
-
