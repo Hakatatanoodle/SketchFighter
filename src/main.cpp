@@ -53,11 +53,11 @@ void update(GameState& state,float delta)
     //Input handling
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             {
-                state.playerPosition.x -= kPlayerSpeed * delta;
+                state.playerPosition.x -= state.playerSpeed * delta;
             }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
             {
-                state.playerPosition.x+=kPlayerSpeed*delta;
+                state.playerPosition.x+=state.playerSpeed*delta;
             }
 
         //Clamping
@@ -71,7 +71,7 @@ void update(GameState& state,float delta)
         {
             state.playerPosition.x=maxX;
         }
-
+        //Apply to player
         state.player.setPosition(state.playerPosition);
 }
 
