@@ -1,38 +1,40 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-int main()
+//Constants
+constexpr unsigned int kWindowWidth = 800;//using unsigned as videoMode() function takes unsigned int as parameters
+constexpr unsigned int kWindowHeight = 600;
+constexpr float kPlayerWidth = 50.f;
+constexpr float kPlayerHeight = 100.f;
+constexpr float kPlayerSpeed=200.f;
+
+struct GameState
 {
-    const float playerSpeed = 200.f;
-    const float windowWidth = 800.f;
-    const float windowHeight = 600.f;
-    const float playerWidth = 50.f;
-    const float playerHeight = 100.f;
+    sf::Vector2f playerPosition;
+    float playerSpeed;
+    sf::RectangleShape player;
+};
 
-    std::cout<<"=====SketchFighter SFML Prototype=====" << std::endl;
-    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "SketchFighter Prototype");
-    std::cout<<"Window created!" << std::endl;
-    window.setFramerateLimit(60);
-
-    
-    sf::Vector2f playerPosition(
-        (windowWidth-playerWidth)/2.f,
-        (windowHeight-playerHeight)/2.f 
+//initialization function
+void init(GameState& state)
+{
+    state.playerPosition =  sf::Vector2f(
+        (kWindowWidth-kPlayerWidth)/2.f,
+        (kWindowHeight-kPlayerHeight)/2.f 
     );
-    sf::RectangleShape player(sf::Vector2f(playerWidth,playerHeight));
-    player.setFillColor(sf::Color::White);
-    player.setPosition(playerPosition);
+    state.playerSpeed = kPlayerSpeed;
+    state.player = sf::RectangleShape(sf::Vector2f(kPlayerWidth,kPlayerHeight));
+    state.player.setFillColor(sf::Color::White);
+    state.player.setPosition(state.playerPosition);
+}
 
-    sf::Clock clock;
-    while(window.isOpen())
+//Event handling function
+void handleEvents(sf::RenderWindow& window,GameState& state)
+{
+    sf::Event event;
+    while(window.pollEvent(event))
     {
-        float delta = clock.restart().asSeconds();
-
-        sf::Event event;
-        while(window.pollEvent(event))
-        {
-            
-            if(event.type == sf::Event::Closed)
+        if(event.type == sf::Event::Closed)
             {
                 std::cout<<"window closed!"<<std::endl;
                 window.close(); 
@@ -43,36 +45,63 @@ int main()
                 std::cout<<"Escape key pressed!"<<std::endl;
                 window.close();
             }
-            
-            
-        }
+    }
+}
+
+void update(GameState& state,float delta)
+{
+    //Input handling
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             {
-                playerPosition.x -= playerSpeed * delta;
-                //Applying clamping to the left side of the window
-                if(playerPosition.x < 0)
-                {
-                    playerPosition.x = 0;
-                }
+                state.playerPosition.x -= kPlayerSpeed * delta;
             }
-            
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
             {
-                playerPosition.x+=playerSpeed*delta;
-                //Applying clamping to the right side of the window
-                float maxX=windowWidth-playerWidth;
-                if(playerPosition.x>maxX)
-                {
-                    playerPosition.x=maxX;
-                }
-
+                state.playerPosition.x+=kPlayerSpeed*delta;
             }
-        
-        window.clear(sf::Color::Black);
-        player.setPosition(playerPosition);
-        window.draw(player);
-        window.display();
 
+        //Clamping
+        if(state.playerPosition.x<0)
+        {
+            state.playerPosition.x=0;
+        }
+
+        float maxX=kWindowWidth-kPlayerWidth;
+        if(state.playerPosition.x>maxX)
+        {
+            state.playerPosition.x=maxX;
+        }
+
+        state.player.setPosition(state.playerPosition);
+}
+
+void render(sf::RenderWindow& window,const GameState& state)
+{
+    window.clear(sf::Color::Black);
+    window.draw(state.player);
+    window.display();
+}
+int main()
+{
+    std::cout<<"=====SketchFighter SFML Prototype=====" << std::endl;
+
+    sf::RenderWindow window(
+        sf::VideoMode(kWindowWidth, kWindowHeight),
+        "SketchFighter Prototype");
+    window.setFramerateLimit(60);
+
+    GameState state;
+    init(state);
+
+
+    sf::Clock clock;
+    while(window.isOpen())
+    {
+        float delta = clock.restart().asSeconds();
+
+        handleEvents(window,state);
+        update(state,delta);
+        render(window,state);
     }
     std::cout<<"exiting main"<<std::endl;
     return 0;
