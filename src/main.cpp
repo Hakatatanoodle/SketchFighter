@@ -7,12 +7,15 @@ constexpr unsigned int kWindowHeight = 600;
 constexpr float kPlayerWidth = 50.f;
 constexpr float kPlayerHeight = 100.f;
 constexpr float kPlayerSpeed=200.f;
+constexpr float kGravity =  1200.f;
+constexpr float kJumpSpeed = 600.f;
 
 struct GameState
 {
     sf::Vector2f playerPosition;
     float playerSpeed;
     sf::RectangleShape player;
+    sf::Vector2f velocity;
 };
 
 //initialization function
@@ -26,6 +29,7 @@ void init(GameState& state)
     state.player = sf::RectangleShape(sf::Vector2f(kPlayerWidth,kPlayerHeight));
     state.player.setFillColor(sf::Color::White);
     state.player.setPosition(state.playerPosition);
+    state.velocity = sf::Vector2f(0.f,0.f);
 }
 
 //Event handling function
@@ -60,6 +64,18 @@ void update(GameState& state,float delta)
                 state.playerPosition.x+=state.playerSpeed*delta;
             }
 
+        
+        //Compute ground
+        const float groundY = kWindowHeight - kPlayerHeight;
+        bool onGround = state.playerPosition.y >= groundY;
+
+        //Jump
+        if(onGround && sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        {
+            state.velocity.y = -kJumpSpeed;
+            state.playerPosition.y += state.velocity.y * delta;
+        }
+
         //Clamping
         if(state.playerPosition.x<0)
         {
@@ -71,8 +87,31 @@ void update(GameState& state,float delta)
         {
             state.playerPosition.x=maxX;
         }
+        if(state.playerPosition.y<0.f)
+        {
+            state.playerPosition.y=0.f;
+            if(state.velocity.y<0.f)
+            {
+                state.velocity.y=0.f;
+            }
+        }
+        if(state.playerPosition.y> groundY)
+        {
+            state.playerPosition.y = groundY;
+            if(state.velocity.y>0.f)
+            {
+                state.velocity.y=0.f;
+            }
+        }
         //Apply to player
         state.player.setPosition(state.playerPosition);
+
+        //Applying Gravity
+        if(state.playerPosition.y < groundY)
+        {
+            state.velocity.y += kGravity * delta;
+            state.playerPosition.y += state.velocity.y * delta;
+        }
 }
 
 void render(sf::RenderWindow& window,const GameState& state)
