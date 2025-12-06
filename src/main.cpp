@@ -54,7 +54,7 @@ void handleEvents(sf::RenderWindow& window,GameState& state)
 
 void update(GameState& state,float delta)
 {
-    //Input handling
+    //Horizontal Input handling
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             {
                 state.playerPosition.x -= state.playerSpeed * delta;
@@ -73,8 +73,15 @@ void update(GameState& state,float delta)
         if(onGround && sf::Keyboard::isKeyPressed(sf::Keyboard::W))
         {
             state.velocity.y = -kJumpSpeed;
-            state.playerPosition.y += state.velocity.y * delta;
         }
+
+        //Applying Gravity
+        if(state.playerPosition.y < groundY)
+        {
+            state.velocity.y += kGravity * delta;
+        }
+        //Velocity integration
+        state.playerPosition.y += state.velocity.y * delta;
 
         //Clamping
         if(state.playerPosition.x<0)
@@ -106,12 +113,7 @@ void update(GameState& state,float delta)
         //Apply to player
         state.player.setPosition(state.playerPosition);
 
-        //Applying Gravity
-        if(state.playerPosition.y < groundY)
-        {
-            state.velocity.y += kGravity * delta;
-            state.playerPosition.y += state.velocity.y * delta;
-        }
+        
 }
 
 void render(sf::RenderWindow& window,const GameState& state)
