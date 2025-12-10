@@ -10,30 +10,95 @@ constexpr float kPlayerSpeed=200.f;
 constexpr float kGravity =  1200.f;
 constexpr float kJumpSpeed = 600.f;
 
-struct GameState
-{
-    sf::Vector2f playerPosition;
-    float playerSpeed;
-    sf::RectangleShape player;
-    sf::Vector2f velocity;
+class Player{
+    public:
+    
+        //initialization function
+        void initialize(sf::Vector2f& startPosition)
+        {
+          m_shape = sf::RectangleShape(sf::Vector2f(kPlayerWidth,kPlayerHeight));
+          m_shape.setFillColor(sf::Color::White);
+          m_shape.setPosition(startPosition);
+          m_speed = kPlayerSpeed;
+          m_velocity = sf::Vector2f(0.f,0.f);
+          m_position = startPosition;
+        };
+        void update(float delta)
+        {
+            //Horizontal Input handling
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            {
+                m_position.x -= m_speed * delta;
+            }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            {
+                m_position.x+=m_speed*delta;
+            }
+
+        
+        //Compute ground
+        const float groundY = kWindowHeight - kPlayerHeight;
+        bool onGround = m_position.y >= groundY;
+
+        //Jump
+        if(onGround && sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        {
+            m_velocity.y = -kJumpSpeed;
+        }
+
+        //Applying Gravity
+        if(m_position.y < groundY)
+        {
+            m_velocity.y += kGravity * delta;
+        }
+        //Velocity integration
+        m_position.y += m_velocity.y * delta;
+
+        //Clamping
+        if(m_position.x<0)
+        {
+            m_position.x=0;
+        }
+
+        float maxX=kWindowWidth-kPlayerWidth;
+        if(m_position.x>maxX)
+        {
+            m_position.x=maxX;
+        }
+        if(m_position.y<0.f)
+        {
+            m_position.y=0.f;
+            if(m_velocity.y<0.f)
+            {
+                m_velocity.y=0.f;
+            }
+        }
+        if(m_position.y> groundY)
+        {
+            m_position.y = groundY;
+            if(m_velocity.y>0.f)
+            {
+                m_velocity.y=0.f;
+            }
+        }
+        //Apply to player
+        m_shape.setPosition(m_position);
+        };
+        void render(sf::RenderWindow& window)
+        {
+            window.draw(m_shape);
+        };
+    private:
+        sf::RectangleShape m_shape;
+        sf::Vector2f m_velocity;
+        sf::Vector2f m_position;
+        float m_speed;
 };
 
-//initialization function
-void init(GameState& state)
-{
-    state.playerPosition =  sf::Vector2f(
-        (kWindowWidth-kPlayerWidth)/2.f,
-        (kWindowHeight-kPlayerHeight)/2.f 
-    );
-    state.playerSpeed = kPlayerSpeed;
-    state.player = sf::RectangleShape(sf::Vector2f(kPlayerWidth,kPlayerHeight));
-    state.player.setFillColor(sf::Color::White);
-    state.player.setPosition(state.playerPosition);
-    state.velocity = sf::Vector2f(0.f,0.f);
-}
+
 
 //Event handling function
-void handleEvents(sf::RenderWindow& window,GameState& state)
+void handleEvents(sf::RenderWindow& window)
 {
     sf::Event event;
     while(window.pollEvent(event))
@@ -52,76 +117,8 @@ void handleEvents(sf::RenderWindow& window,GameState& state)
     }
 }
 
-void update(GameState& state,float delta)
-{
-    //Horizontal Input handling
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            {
-                state.playerPosition.x -= state.playerSpeed * delta;
-            }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            {
-                state.playerPosition.x+=state.playerSpeed*delta;
-            }
 
-        
-        //Compute ground
-        const float groundY = kWindowHeight - kPlayerHeight;
-        bool onGround = state.playerPosition.y >= groundY;
 
-        //Jump
-        if(onGround && sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        {
-            state.velocity.y = -kJumpSpeed;
-        }
-
-        //Applying Gravity
-        if(state.playerPosition.y < groundY)
-        {
-            state.velocity.y += kGravity * delta;
-        }
-        //Velocity integration
-        state.playerPosition.y += state.velocity.y * delta;
-
-        //Clamping
-        if(state.playerPosition.x<0)
-        {
-            state.playerPosition.x=0;
-        }
-
-        float maxX=kWindowWidth-kPlayerWidth;
-        if(state.playerPosition.x>maxX)
-        {
-            state.playerPosition.x=maxX;
-        }
-        if(state.playerPosition.y<0.f)
-        {
-            state.playerPosition.y=0.f;
-            if(state.velocity.y<0.f)
-            {
-                state.velocity.y=0.f;
-            }
-        }
-        if(state.playerPosition.y> groundY)
-        {
-            state.playerPosition.y = groundY;
-            if(state.velocity.y>0.f)
-            {
-                state.velocity.y=0.f;
-            }
-        }
-        //Apply to player
-        state.player.setPosition(state.playerPosition);
-
-        
-}
-
-void render(sf::RenderWindow& window,const GameState& state)
-{
-    window.clear(sf::Color::Black);
-    window.draw(state.player);
-    window.display();
-}
 int main()
 {
     std::cout<<"=====SketchFighter SFML Prototype=====" << std::endl;
@@ -131,18 +128,22 @@ int main()
         "SketchFighter Prototype");
     window.setFramerateLimit(60);
 
-    GameState state;
-    init(state);
-
+    Player player;
+    player.initialize(sf::Vector2f(
+        (kWindowWidth  - kPlayerWidth) /2.f,
+        (kWindowHeight - kPlayerHeight)/2.f
+    ));
 
     sf::Clock clock;
     while(window.isOpen())
     {
         float delta = clock.restart().asSeconds();
 
-        handleEvents(window,state);
-        update(state,delta);
-        render(window,state);
+        handleEvents(window,player);
+        player.update(delta);
+        window.clear(sf::Color::Black);
+        player.render(window);
+        window.display();
     }
     std::cout<<"exiting main"<<std::endl;
     return 0;
