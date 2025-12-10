@@ -14,7 +14,7 @@ class Player{
     public:
     
         //initialization function
-        void initialize(sf::Vector2f startPosition)
+        void initialize(sf::Vector2f& startPosition)
         {
           m_shape = sf::RectangleShape(sf::Vector2f(kPlayerWidth,kPlayerHeight));
           m_shape.setFillColor(sf::Color::White);
@@ -98,7 +98,7 @@ class Player{
 
 
 //Event handling function
-void handleEvents(sf::RenderWindow& window,Player& player)
+void handleEvents(sf::RenderWindow& window)
 {
     sf::Event event;
     while(window.pollEvent(event))
