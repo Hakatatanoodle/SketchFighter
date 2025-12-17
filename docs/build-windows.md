@@ -17,3 +17,8 @@ From the project root (`C:\yooo\SketchFighter\SketchFighter`):
 
 ```powershell
 C:\winlibs-sfml\mingw64\bin\g++.exe src\main.cpp -IC:\libs\SFML-2.6.2\include -LC:\libs\SFML-2.6.2\lib -lsfml-graphics -lsfml-window -lsfml-system -o SketchFighter.exe
+
+C:\winlibs-sfml\mingw64\bin\g++.exe -I include src\main.cpp -IC:\libs\SFML-2.6.2\include -LC:\libs\SFML-2.6.2\lib -lsfml-graphics -lsfml-window -lsfml-system -o SketchFighter.exe
+
+
+C:\winlibs-sfml\mingw64\bin\g++.exe -I include src\main.cpp src\Player.cpp src\Enemy.cpp -IC:\libs\SFML-2.6.2\include -LC:\libs\SFML-2.6.2\lib -lsfml-graphics -lsfml-window -lsfml-system -o SketchFighter.exe
